@@ -1,0 +1,328 @@
+{
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "births": {
+    "counts": [
+      313398,
+      312678,
+      310249,
+      341122,
+      334018,
+      341029,
+      356838
+    ],
+    "rates": [
+      29.1,
+      28.8,
+      28.4,
+      27.7,
+      27.5,
+      27.4,
+      27.2
+    ]
+  },
+  "deaths": {
+    "counts": [
+      23791,
+      22634,
+      19797,
+      25536,
+      32853,
+      36021,
+      39355
+    ],
+    "rates": [
+      5.9,
+      6.0,
+      5.8,
+      5.8,
+      5.8,
+      5.7,
+      5.5
+    ]
+  },
+  "marriages": {
+    "counts": [
+      48526,
+      30859,
+      33809,
+      35529,
+      57880,
+      52878,
+      50256
+    ],
+    "rates": [
+      3.9,
+      2.4,
+      2.6,
+      2.7,
+      4.3,
+      3.8,
+      3.6
+    ]
+  },
+  "registration": {
+    "birthCompleteness": [
+      87.0,
+      85.8,
+      84.2,
+      92.9,
+      90.04,
+      90.3,
+      92.9
+    ],
+    "deathCompleteness": [
+      31.4,
+      29.9,
+      26.2,
+      31.1,
+      41.8,
+      46.1,
+      50.5
+    ]
+  },
+  "provenance": {
+    "origin": "NISR CRVS workbooks; precomputed by analytics/analyze_crvs.py",
+    "marriage_count_note": "2025 workbook time series: 50,256; factsheet headline: 50,236"
+  },
+  "supplemental": {
+    "maternal_age": {
+      "labels": [
+        "10–14",
+        "15–19",
+        "20–24",
+        "25–29",
+        "30–34",
+        "35–39",
+        "40–44",
+        "45–49",
+        "50+"
+      ],
+      "values": [
+        0.1,
+        8.4,
+        24.2,
+        23.9,
+        19.8,
+        15.4,
+        7.4,
+        0.8,
+        0.1
+      ],
+      "unit": "percent",
+      "source": "Legacy project chart transcription; validate against NISR birth factsheet",
+      "verification_status": "needs_source_verification"
+    },
+    "age_specific_fertility": {
+      "labels": [
+        "15–19",
+        "20–24",
+        "25–29",
+        "30–34",
+        "35–39",
+        "40–44",
+        "45–49"
+      ],
+      "values": [
+        41.9,
+        132.6,
+        166.3,
+        153.6,
+        126.8,
+        67.4,
+        9.6
+      ],
+      "unit": "births per 1000 women",
+      "source": "Legacy project chart transcription; validate against NISR 2025 final tables",
+      "verification_status": "needs_source_verification"
+    },
+    "divorce_duration": {
+      "labels": [
+        "0–4",
+        "5–9",
+        "10–14",
+        "15–19",
+        "20–24",
+        "25–29",
+        "30–34",
+        "35–39",
+        "40–44",
+        "45–49",
+        "50+"
+      ],
+      "values": [
+        768.0,
+        1076.0,
+        928.0,
+        813.0,
+        458.0,
+        183.0,
+        93.0,
+        76.0,
+        37.0,
+        20.0,
+        27.0
+      ],
+      "unit": "divorces",
+      "source": "Legacy project chart transcription; validate against NISR marriage/divorce factsheet",
+      "verification_status": "needs_source_verification"
+    },
+    "divorce_province": {
+      "labels": [
+        "Kigali City",
+        "Southern",
+        "Eastern",
+        "Northern",
+        "Western"
+      ],
+      "values": [
+        1820.0,
+        980.0,
+        820.0,
+        520.0,
+        339.0
+      ],
+      "unit": "divorces",
+      "source": "Legacy project chart transcription; validate against NISR marriage/divorce factsheet",
+      "verification_status": "needs_source_verification"
+    },
+    "cause_facility": {
+      "labels": [
+        "Non-communicable",
+        "Communicable etc.",
+        "Injuries"
+      ],
+      "values": [
+        49.5,
+        40.0,
+        10.5
+      ],
+      "unit": "percent",
+      "source": "Legacy project chart transcription; validate against NISR causes-of-death factsheet",
+      "verification_status": "needs_source_verification"
+    },
+    "cause_community": {
+      "labels": [
+        "Non-communicable",
+        "Communicable etc.",
+        "Injuries"
+      ],
+      "values": [
+        58.8,
+        26.9,
+        14.3
+      ],
+      "unit": "percent",
+      "source": "Legacy project chart transcription; validate against NISR causes-of-death factsheet",
+      "verification_status": "needs_source_verification"
+    }
+  },
+  "factsheet_indicators": {
+    "Registered live births": 356838.0,
+    "Registered deaths": 39355.0,
+    "Registered marriages": 50236.0,
+    "Registered divorces": 4479.0,
+    "Divorces granted and registered in 2025": 2629.0,
+    "Live births in health facilities": 97.8,
+    "Births to adolescent mothers aged 10–19": 8.5,
+    "Total fertility rate": 3.5,
+    "Registered community deaths": 55.9,
+    "Usable cause of death in facilities": 82.3,
+    "Usable cause of death in community": 83.9,
+    "Community of property marriages": 97.0
+  },
+  "display": {
+    "99.1%": "99.1%",
+    "89.9%": "89.9%",
+    "8.1%": "8.1%",
+    "24,393": "24,393",
+    "8,229": "8,229",
+    "102.7": "102.7",
+    "14,997": "14,997",
+    "18,921": "18,921",
+    "87.0%": "87.0%",
+    "92.9%": "92.9%",
+    "50.5%": "50.5%",
+    "97.8%": "97.8%",
+    "8.5%": "8.5%",
+    "3.5": "3.5",
+    "55.9%": "55.9%",
+    "82.3%": "82.3%",
+    "83.9%": "83.9%",
+    "97.0%": "97.0%",
+    "356,838": "356,838",
+    "39,355": "39,355",
+    "50,236": "50,236",
+    "4,479": "4,479",
+    "2,629": "2,629",
+    "42.4": "42.4",
+    "19.1": "19.1",
+    "4.4": "4.4",
+    "166.3": "166.3",
+    "58.8%": "58.8%",
+    "49.5%": "49.5%",
+    "50,256": "50,256",
+    "23,791": "23,791",
+    "43,440": "43,440",
+    "13.9%": "13.9%",
+    "5.9": "5.9",
+    "5.5": "5.5",
+    "29.1": "29.1",
+    "27.2": "27.2",
+    "1.9": "1.9",
+    "3.9": "3.9",
+    "3.6": "3.6",
+    "31.4%": "31.4%"
+  },
+  "display_provenance": {
+    "99.1%": "2025 workbook Figure6 timely registered births",
+    "89.9%": "2025 workbook Figure6 timely registered deaths",
+    "8.1%": "2025 workbook Table9 low birth weight",
+    "24,393": "Legacy dashboard transcription, district births; needs verification",
+    "8,229": "Legacy dashboard transcription, district births; needs verification",
+    "102.7": "2025 workbook Table9 sex ratio at birth",
+    "14,997": "Legacy dashboard transcription; needs source verification",
+    "18,921": "Legacy dashboard transcription; needs source verification",
+    "87.0%": "2019 completeness in processed trend CSV",
+    "92.9%": "2025 completeness in processed trend CSV",
+    "50.5%": "2025 completeness in processed trend CSV",
+    "97.8%": "data/processed/factsheet_indicators_2025.csv: Live births in health facilities",
+    "8.5%": "data/processed/factsheet_indicators_2025.csv: Births to adolescent mothers aged 10–19",
+    "3.5": "data/processed/factsheet_indicators_2025.csv: Total fertility rate",
+    "55.9%": "data/processed/factsheet_indicators_2025.csv: Registered community deaths",
+    "82.3%": "data/processed/factsheet_indicators_2025.csv: Usable cause of death in facilities",
+    "83.9%": "data/processed/factsheet_indicators_2025.csv: Usable cause of death in community",
+    "97.0%": "data/processed/factsheet_indicators_2025.csv: Community of property marriages",
+    "356,838": "data/processed/factsheet_indicators_2025.csv: Registered live births",
+    "39,355": "data/processed/factsheet_indicators_2025.csv: Registered deaths",
+    "50,236": "data/processed/factsheet_indicators_2025.csv: Registered marriages",
+    "4,479": "data/processed/factsheet_indicators_2025.csv: Registered divorces",
+    "2,629": "data/processed/factsheet_indicators_2025.csv: Divorces granted and registered in 2025",
+    "42.4": "2025 dashboard findings CSV",
+    "19.1": "2025 dashboard findings CSV",
+    "4.4": "2025 dashboard findings CSV",
+    "166.3": "Legacy chart transcription; needs source verification",
+    "58.8%": "Legacy causes chart; needs source verification",
+    "49.5%": "Legacy causes chart; needs source verification",
+    "50,256": "2025 time series processed marriage CSV",
+    "23,791": "2019 time series processed death CSV",
+    "43,440": "2019–2025 change from processed birth CSV",
+    "13.9%": "2019–2025 relative change from processed birth CSV",
+    "5.9": "2019 death rate from processed CSV or completeness change (context dependent)",
+    "5.5": "2025 adjusted crude death rate",
+    "29.1": "2019 adjusted crude birth rate",
+    "27.2": "2025 adjusted crude birth rate",
+    "1.9": "Legacy commentary numeric, context dependent",
+    "3.9": "2019 marriage rate",
+    "3.6": "2025 marriage rate",
+    "31.4%": "2019 death completeness in 2025 source trend series"
+  },
+  "data_quality_warning": "Supplemental legacy-transcribed chart series are not independently source-verified; see CSV verification_status."
+}

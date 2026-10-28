@@ -1,0 +1,18 @@
+{
+  "raw_rows": 2876,
+  "source_sheets": 195,
+  "time_series_years": 7,
+  "validation": "PASS",
+  "checks": [
+    "7 calendar years present",
+    "2025 births 92.9%",
+    "2025 deaths 50.5%",
+    "2025 gap 42.4 percentage points"
+  ],
+  "limitations": [
+    "Some source sheets include formatted/empty ranges and mixed units; raw rows must be interpreted with sheet context",
+    "Factsheet indicator catalog is transcribed, not independently derived from sheet cells",
+    "Cross-year comparability depends on NISR definitions and revisions; latest 2025 workbook is used for historical trends",
+    "2025 marriage count discrepancy: 50,256 in workbook Table18 versus 50,236 in 2025 marriage factsheet; chart preserves Table18"
+  ]
+}

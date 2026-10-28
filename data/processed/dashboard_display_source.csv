@@ -1,0 +1,42 @@
+display,value,suffix,source
+99.1%,99.1,%,2025 workbook Figure6 timely registered births
+89.9%,89.9,%,2025 workbook Figure6 timely registered deaths
+8.1%,8.1,%,2025 workbook Table9 low birth weight
+"24,393",24393,,"Legacy dashboard transcription, district births; needs verification"
+"8,229",8229,,"Legacy dashboard transcription, district births; needs verification"
+102.7,102.7,,2025 workbook Table9 sex ratio at birth
+"14,997",14997,,Legacy dashboard transcription; needs source verification
+"18,921",18921,,Legacy dashboard transcription; needs source verification
+87.0%,87.0,%,2019 completeness in processed trend CSV
+92.9%,92.9,%,2025 completeness in processed trend CSV
+50.5%,50.5,%,2025 completeness in processed trend CSV
+97.8%,97.8,%,2025 birth factsheet indicator CSV
+8.5%,8.5,%,2025 birth factsheet indicator CSV
+3.5,3.5,,2025 birth factsheet indicator CSV
+55.9%,55.9,%,2025 death factsheet indicator CSV
+82.3%,82.3,%,2025 death factsheet indicator CSV
+83.9%,83.9,%,2025 death factsheet indicator CSV
+97.0%,97.0,%,2025 marriage factsheet indicator CSV
+"356,838",356838,,2025 registered live births factsheet indicator CSV
+"39,355",39355,,2025 registered deaths factsheet indicator CSV
+"50,236",50236,,2025 marriages factsheet indicator CSV
+"4,479",4479,,2025 divorces factsheet indicator CSV
+"2,629",2629,,2025 divorces granted factsheet indicator CSV
+42.4,42.4,,2025 dashboard findings CSV
+19.1,19.1,,2025 dashboard findings CSV
+4.4,4.4,,2025 dashboard findings CSV
+166.3,166.3,,Legacy chart transcription; needs source verification
+58.8%,58.8,%,Legacy causes chart; needs source verification
+49.5%,49.5,%,Legacy causes chart; needs source verification
+"50,256",50256,,2025 time series processed marriage CSV
+"23,791",23791,,2019 time series processed death CSV
+"43,440",43440,,2019–2025 change from processed birth CSV
+13.9%,13.9,%,2019–2025 relative change from processed birth CSV
+5.9,5.9,,2019 death rate from processed CSV or completeness change (context dependent)
+5.5,5.5,,2025 adjusted crude death rate
+29.1,29.1,,2019 adjusted crude birth rate
+27.2,27.2,,2025 adjusted crude birth rate
+1.9,1.9,,"Legacy commentary numeric, context dependent"
+3.9,3.9,,2019 marriage rate
+3.6,3.6,,2025 marriage rate
+31.4%,31.4,%,2019 death completeness in 2025 source trend series

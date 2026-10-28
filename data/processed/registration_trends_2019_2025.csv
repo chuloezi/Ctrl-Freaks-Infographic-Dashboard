@@ -1,0 +1,8 @@
+year,birth_completeness_pct,death_completeness_pct,completeness_gap_pp,birth_timely_pct,death_timely_pct,source_file,completeness_sheet,timeliness_sheet
+2019,87.0,31.4,55.6,78.0,68.6,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2020,85.8,29.9,55.9,72.3,62.0,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2021,84.2,26.2,58.0,93.7,68.0,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2022,92.9,31.1,61.8,95.9,94.8,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2023,90.04,41.8,48.24,98.5,97.7,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2024,90.3,46.1,44.2,99.1,96.3,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6
+2025,92.9,50.5,42.4,99.069,89.9,Final Tables_CRVS_2025_0.xlsx,Figure7,Figure6

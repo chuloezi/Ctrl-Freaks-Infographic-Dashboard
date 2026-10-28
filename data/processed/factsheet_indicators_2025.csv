@@ -1,0 +1,13 @@
+year,indicator,value,unit,source_document,page,definition
+2025,Registered live births,356838,events,Birth Statistics Factsheet 2025,p. 1,Births occurring in 2025 registered in CRVS
+2025,Registered deaths,39355,events,Death & Cause of Death Statistics Factsheet 2025,p. 1,Deaths occurring and registered in 2025
+2025,Registered marriages,50236,events,Marriage & Divorce Statistics Factsheet 2025,p. 1,Marriages registered in CRVS
+2025,Registered divorces,4479,events,Marriage & Divorce Statistics Factsheet 2025,p. 1,Divorces recorded in CRVS; not a divorce rate
+2025,Divorces granted and registered in 2025,2629,events,Marriage & Divorce Statistics Factsheet 2025,p. 1,Subset of legally granted and registered divorces
+2025,Live births in health facilities,97.8,percent,Birth Statistics Factsheet 2025,p. 1,Of registered live births
+2025,Births to adolescent mothers aged 10–19,8.5,percent,Birth Statistics Factsheet 2025,p. 1,Of registered live births
+2025,Total fertility rate,3.5,births per woman,Birth Statistics Factsheet 2025,p. 1,Period total fertility rate
+2025,Registered community deaths,55.9,percent,Death & Cause of Death Statistics Factsheet 2025,p. 1,Of registered deaths
+2025,Usable cause of death in facilities,82.3,percent,Death & Cause of Death Statistics Factsheet 2025,p. 1,Of relevant certified facility deaths
+2025,Usable cause of death in community,83.9,percent,Death & Cause of Death Statistics Factsheet 2025,p. 1,Of relevant community causes
+2025,Community of property marriages,97.0,percent,Marriage & Divorce Statistics Factsheet 2025,p. 2,Of registered marriages

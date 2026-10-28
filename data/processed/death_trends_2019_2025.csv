@@ -1,0 +1,8 @@
+year,registered_deaths,adjusted_crude_death_rate_per_1000,registered_deaths_yoy_change,registered_deaths_yoy_pct,source_file,source_sheet
+2019,23791,5.9,,,Final Tables_CRVS_2025_0.xlsx,10.5
+2020,22634,6.0,-1157,-4.86,Final Tables_CRVS_2025_0.xlsx,10.5
+2021,19797,5.8,-2837,-12.53,Final Tables_CRVS_2025_0.xlsx,10.5
+2022,25536,5.8,5739,28.99,Final Tables_CRVS_2025_0.xlsx,10.5
+2023,32853,5.8,7317,28.65,Final Tables_CRVS_2025_0.xlsx,10.5
+2024,36021,5.7,3168,9.64,Final Tables_CRVS_2025_0.xlsx,10.5
+2025,39355,5.5,3334,9.26,Final Tables_CRVS_2025_0.xlsx,10.5

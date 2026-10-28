@@ -1,0 +1,39 @@
+chart,category,value,unit,provenance,verification_status
+maternal_age,10–14,0.1,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,15–19,8.4,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,20–24,24.2,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,25–29,23.9,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,30–34,19.8,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,35–39,15.4,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,40–44,7.4,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,45–49,0.8,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+maternal_age,50+,0.1,percent,Legacy project chart transcription; validate against NISR birth factsheet,needs_source_verification
+age_specific_fertility,15–19,41.9,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,20–24,132.6,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,25–29,166.3,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,30–34,153.6,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,35–39,126.8,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,40–44,67.4,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+age_specific_fertility,45–49,9.6,births per 1000 women,Legacy project chart transcription; validate against NISR 2025 final tables,needs_source_verification
+divorce_duration,0–4,768,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,5–9,1076,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,10–14,928,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,15–19,813,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,20–24,458,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,25–29,183,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,30–34,93,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,35–39,76,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,40–44,37,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,45–49,20,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_duration,50+,27,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_province,Kigali City,1820,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_province,Southern,980,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_province,Eastern,820,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_province,Northern,520,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+divorce_province,Western,339,divorces,Legacy project chart transcription; validate against NISR marriage/divorce factsheet,needs_source_verification
+cause_facility,Non-communicable,49.5,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification
+cause_facility,Communicable etc.,40,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification
+cause_facility,Injuries,10.5,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification
+cause_community,Non-communicable,58.8,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification
+cause_community,Communicable etc.,26.9,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification
+cause_community,Injuries,14.3,percent,Legacy project chart transcription; validate against NISR causes-of-death factsheet,needs_source_verification

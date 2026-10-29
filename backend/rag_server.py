@@ -111,23 +111,58 @@ def model_ready():
     return bool(GEMINI_API_KEY)
 
 def _human_fallback(question, found, reason):
-    """Keep the fallback useful, grounded, and source-cited without the LLM."""
-    qlow=question.lower()
+    """Deterministic Markdown fallback: source-grounded, no fabricated claims."""
+    qlow = question.lower()
+    heading = f'**{reason}**'
     if (('cause' in qlow or 'reason' in qlow) and 'death' in qlow
             and any('sheet: Table 17;' in d['text'] for d in found)):
-        lines=['2025 leading *recorded* causes of death, with separate rankings for health facilities and communities:']
+        lines = [heading, '', '### Leading recorded causes of death (2025)',
+                 'The source reports health-facility and community distributions separately.', '']
         for d in found[:5]:
-            row_text=d['text'].split('row_text: ',1)[-1].split('; source cells:',1)[0]
-            values=[v.strip() for v in row_text.split('|')]
-            if len(values)>=5 and values[0].isdigit():
-                lines.append(f"{values[0]}. Facilities: {values[1]} ({values[2]}%); "
-                             f"community: {values[3]} ({values[4]}%) [{d['id']}]")
-        if len(lines)>1:
-            lines.append('These are separate recorded-cause distributions, not shares of all deaths in Rwanda.')
-            return reason+'\n\n'+'\n'.join(lines)
-    return reason+' Retrieved CSV evidence:\n\n'+'\n'.join(
-        f"[{d['id']}] {d['text'][:350]}" for d in found[:3])
+            raw = d['text'].split('row_text: ', 1)[-1].split('; source cells:', 1)[0]
+            values = [v.strip() for v in raw.split('|')]
+            if len(values) >= 5 and values[0].isdigit():
+                lines.append(f"{values[0]}. **Facilities:** {values[1]} ({values[2]}%); "
+                             f"**community:** {values[3]} ({values[4]}%) [{d['id']}]")
+        if len(lines) > 5:
+            lines += ['', '*These are recorded-cause distributions, not shares of all deaths in Rwanda.*']
+            return '\n'.join(lines)
 
+    if ('birth' in qlow and 'death' in qlow
+            and any(w in qlow for w in ('registration', 'completeness', 'gap'))):
+        years = re.findall(r'\b20[12][0-9]\b', qlow)
+        requested_year = years[-1] if years else None
+        for d in found:
+            if d['file'] != 'registration_trends_2019_2025.csv':
+                continue
+            columns = dict(re.findall(r'([a-z_]+):\s*([^;]+)', d['text']))
+            if requested_year and columns.get('year') != requested_year:
+                continue
+            try:
+                birth = float(columns['birth_completeness_pct'])
+                death = float(columns['death_completeness_pct'])
+            except (KeyError, ValueError):
+                continue
+            year = columns.get('year', 'the reported year')
+            return (heading + '\n\n'
+                    + f'### Registration completeness in {year}\n\n'
+                    + f'- **Birth registration:** {birth:g}%\n'
+                    + f'- **Death registration:** {death:g}%\n'
+                    + f'- **Gap:** {birth-death:.1f} percentage points [{d["id"]}]\n\n'
+                    + 'The gap is the birth-registration completeness rate minus '
+                    + 'the death-registration completeness rate.')
+
+    lines = [heading, '', '### Relevant CSV evidence', '']
+    for d in found[:3]:
+        # Avoid dumping long raw workbook rows or internal metadata on the page.
+        fields = [f.strip() for f in d['text'].split('; ')]
+        display = [f for f in fields if not f.startswith(('source_file:', 'source_sheet:',
+                    'publication_year:', 'values_json:', 'source cells:'))]
+        snippet = '; '.join(display[:4])[:240]
+        if snippet:
+            lines.append(f'- {snippet} [{d["id"]}]')
+    lines += ['', '*The evidence above is retrieved directly from project CSV files.*']
+    return '\n'.join(lines)
 
 def answer(question):
     found=retrieve(question)
@@ -136,7 +171,7 @@ def answer(question):
                 'sources':[],'mode':'insufficient_data'}
     facts=numeric_evidence(question)
     citations=[{'id':d['id'],'file':d['file'],'csv_line':d['line']} for d in found]
-    fallback_sources=citations[:5] if any('sheet: Table 17;' in d['text'] for d in found) else citations[:3]
+    fallback_sources=citations  # UI displays only the IDs actually cited by the fallback
     if not GEMINI_API_KEY:
         return {'answer':_human_fallback(question,found,'Gemini API key is not configured.'),
                 'sources':fallback_sources,'mode':'csv_retrieval_only',
@@ -153,6 +188,16 @@ def answer(question):
             'is an individual probability. Keep answers focused and readable.')
     prompt=('PYTHON-CALCULATED FACTS (when available):\n'+json.dumps(facts,ensure_ascii=False)+
             '\nRETRIEVED CSV EVIDENCE:\n'+context+'\n\nQUESTION:\n'+question)
+    # CTRL_FREAKS_RAG_UI_V1: constrain citation IDs and present readable Markdown.
+    allowed_tags = ', '.join(f'[{d["id"]}]' for d in found)
+    prompt += ('\n\nANSWER FORMAT: Use clear Markdown paragraphs, **bold** labels, '
+               'and short bullet or numbered lists when useful. Avoid raw CSV fields. '
+               'Do not add a Sources section; the dashboard presents sources separately. '
+               'Cite each numerical statement or ranking item using exact tags like [CSV28], '
+               'only if the ID is present in the evidence. Multiple tags must appear '
+               'separately, like [CSV28] [CSV31]. Include at least one valid tag. '
+               'Never invent a source identifier. '
+               'ALLOWED SOURCE TAGS: ' + allowed_tags)
     generation={'temperature':0,'maxOutputTokens':1600}
     # Only Gemini 2.5 Flash supports this exact thinkingBudget setting.
     if GEMINI_MODEL=='gemini-2.5-flash':
@@ -186,13 +231,19 @@ def answer(question):
         response='\n'.join(p.get('text','') for p in parts if not p.get('thought')).strip()
         if not response:
             raise ValueError('Gemini returned no text; finishReason='+str(candidates[0].get('finishReason')))
+        # Normalize minor citation-formatting variations, never invent IDs.
+        response=re.sub(r'\[\s*CSV\s*(\d+)\s*\]',r'[CSV\1]',response,flags=re.IGNORECASE)
+        response=re.sub(r'【\s*CSV\s*(\d+)\s*】',r'[CSV\1]',response,flags=re.IGNORECASE)
         used=set(re.findall(r'\[(CSV\d+)\]',response))
         permitted={d['id'] for d in found}
         if not used or not used<=permitted:
+            print('Gemini citation check failed; cited:',sorted(used),
+                  '; allowed:',sorted(permitted),flush=True)
             return {'answer':_human_fallback(question,found,'Gemini reply lacked valid source citations.'),
                     'sources':fallback_sources,'mode':'citation_validation_fallback',
                     'calculated_facts':facts,'error_type':'invalid_citations'}
-        return {'answer':response,'sources':citations,'mode':'gemini_csv_rag','calculated_facts':facts}
+        cited_sources=[s for s in citations if s['id'] in used]
+        return {'answer':response,'sources':cited_sources,'mode':'gemini_csv_rag','calculated_facts':facts}
     except urllib.error.HTTPError as exc:
         raw=exc.read().decode('utf-8',errors='replace')[:1500]
         print(f'Gemini HTTP {exc.code}: {raw}',flush=True)

@@ -13,7 +13,7 @@ export default function App(){
  useEffect(() => { initializeCharts();
   let cancelled = false;
   fetch(`${API_BASE}/api/health`).then(r => {if(!r.ok)throw Error('Unavailable');return r.json()}).then(d => {
-   if(!cancelled)setStatus({kind:d.model_ready?'online':'offline',message:d.model_ready?'Gemini RAG ready · CSV-grounded':`CSV retrieval ready · Gemini API key not configured`});
+   if(!cancelled)setStatus({kind:d.model_ready?'online':'offline',message:d.model_ready?'CSV RAG online · Gemini key configured (inference unverified)':`CSV retrieval ready · Gemini API key not configured`});
   }).catch(() => {if(!cancelled)setStatus({kind:'offline',message:'RAG backend offline · no answers generated'});});
   return () => {cancelled=true};
  },[]);
@@ -25,7 +25,13 @@ export default function App(){
   setAnswer('Searching the evidence…');
   try {const r=await fetch(`${API_BASE}/api/ask`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q.trim()})});
    if(!r.ok)throw Error('API unavailable');
-   const d=await r.json();setAnswer(`${d.answer}\n\nSources: ${(d.sources || []).map(s=>`[${s.id}] ${s.file}:${s.csv_line}`).join('; ')}\nMode: ${d.mode}`);
+   const d=await r.json();
+    setAnswer(`${d.answer}\n\nSources: ${(d.sources || []).map(s=>`[${s.id}] ${s.file}:${s.csv_line}`).join('; ')}\nMode: ${d.mode}`);
+    if (d.mode === 'gemini_csv_rag') {
+      setStatus({kind:'online',message:'Gemini RAG working · CSV-grounded'});
+    } else if (d.mode === 'csv_retrieval_only' || d.mode === 'citation_validation_fallback') {
+      setStatus({kind:'offline',message:`CSV retrieval only · ${d.error_code ? 'Gemini HTTP '+d.error_code : (d.error_type || 'model unavailable')}`});
+    }
   } catch {setAnswer('The CSV-grounded AI service is not connected. The published website can be viewed on GitHub Pages, but detailed RAG answers require the Render API deployment. No answer has been fabricated.');}
  }
  return (

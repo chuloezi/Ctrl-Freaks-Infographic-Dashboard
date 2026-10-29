@@ -1,92 +1,54 @@
 # Every Life, Counted — Ctrl Freaks
 
-A Rwanda Civil Registration and Vital Statistics project using Python for data analysis and React for the interactive infographic. Data comes from NISR CRVS workbooks. This is an independent student project, not an official NISR website.
+A Rwanda CRVS infographic project, built with Python analytics and an interactive React dashboard. The optional chatbot uses CSV retrieval and Gemini for grounded explanations.
 
-**Live dashboard:** Add the GitHub Pages URL here after publishing.
+**Live dashboard:** https://chuloezi.github.io/Ctrl-Freaks-Infographic-Dashboard/
 
-## Project folders
+## Project structure
 
-```text
-static/                       Static infographic (PDF)
-dynamic/                      Interactive React infographic
-  src/                        Dashboard components, charts, styles and data
-  public/                     Public files, including the PDF download
-  package.json                JavaScript dependencies
-analytics/                    Python analysis and JSON export scripts
-data/raw/                     Original Excel workbooks
-data/processed/               Calculated data and source notes
-backend/                      Optional Ollama question-answering server
-requirements.txt              Python dependencies
-.github/workflows/pages.yml   Automatic GitHub Pages deployment
-```
+- `static/` — static PDF infographic
+- `dynamic/` — React interactive dashboard
+- `analytics/` — Python analysis and JSON export
+- `data/` — raw and processed data
+- `backend/` — Python CSV RAG API (Gemini integration)
+- `.github/workflows/pages.yml` — automatic GitHub Pages deployment
 
-## View the infographics
+## View without installing anything
 
-- **Static:** Open `static/static_infographic.pdf` in any PDF reader. The PDF is also included in the published site as `static_infographic.pdf`.
-- **Dynamic:** Open the live GitHub Pages URL in your browser. No installation is needed to view the dashboard.
+Open the live dashboard link above. The public chatbot works after you deploy the backend on Render and configure Gemini as described in [`backend/GEMINI_RENDER_SETUP.md`](backend/GEMINI_RENDER_SETUP.md).
 
-## Run the project locally
+## Update the repository from the project ZIP
 
-Install Python 3.10+, Node.js LTS (includes npm), and Git. Ollama is only needed for local AI questions.
+Copy `backend/rag_server.py`, `backend/requirements.txt`, `backend/GEMINI_RENDER_SETUP.md`, `dynamic/src/App.jsx`, `README.md`, and (if needed) `dynamic/public/config.js` into your cloned repository. Commit and push to `main`.
 
-1. Clone this repository and open a terminal at its root:
+## Run locally (optional developer setup)
 
-   ```powershell
-   git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git
-   cd YOUR-REPO
-   ```
-
-2. Install the Python libraries and prepare the dashboard data:
-
-   ```powershell
-   python -m pip install -r requirements.txt
-   python analytics/export_dashboard_json.py
-   ```
-
-   To rerun the analysis from the Excel workbooks first, run `python analytics/analyze_crvs.py` and then run the export command again.
-
-3. Start React:
-
-   ```powershell
-   cd dynamic
-   npm install
-   npm run dev
-   ```
-
-   Open the local address shown in the terminal, usually `http://localhost:5173/`. If PowerShell blocks `npm`, use `npm.cmd` instead. For a production build, run `npm run build` from `dynamic/`.
-
-## Run the local AI assistant (optional)
-
-Install [Ollama](https://ollama.com/) and download the model:
-
-```powershell
-ollama pull qwen2.5:3b
-ollama serve
-```
-
-If the Ollama app already runs the service, you do not need to start it twice. In another terminal, from the **repository root**, run:
+From the repository root:
 
 ```powershell
 python -m pip install -r requirements.txt
-$env:CORS_ORIGIN = 'http://localhost:5173'
+python analytics/export_dashboard_json.py
+$env:GEMINI_API_KEY = "YOUR_PRIVATE_KEY"
+$env:CORS_ORIGIN = "http://localhost:5173"
 python backend/rag_server.py
 ```
 
-Keep React running in its own terminal. The development server forwards `/api` requests to the Python backend. For a publicly working chatbot, the backend and a compatible LLM must be hosted separately and configured in `dynamic/public/config.js`. GitHub Pages alone cannot run Ollama.
+In another terminal:
 
-## Publish to GitHub Pages
+```powershell
+cd dynamic
+npm install
+npm run dev
+```
 
-1. Upload the repository files, including the `.github/` folder, to GitHub.
-2. In repository **Settings → Pages**, set the source to **GitHub Actions**.
-3. Push to the `main` branch, then check the **Actions** tab for a successful build.
-4. Copy the Pages URL into the **Live dashboard** line at the top of this README and into your GitHub repository About section.
+React's Vite development server forwards `/api` requests to the Python backend. No Ollama installation is needed. Never commit an API key.
 
-The workflow exports Python results, installs React dependencies, builds `dynamic/` and publishes `dynamic/dist/`. Visitors need only a browser.
+## GitHub Pages
 
-## Data sources and checking results
+GitHub Actions builds React and regenerates the dashboard JSON automatically on pushes to `main`. Enable **Settings → Pages → GitHub Actions**. Visitors do not need Python or Node.js installed.
 
-The Python scripts use the NISR CRVS 2023–2025 workbooks in `data/raw/`. The React dashboard reads `dynamic/src/analytics-data.json`, exported from the processed CSV files.
+## RAG data and evidence
 
-Some supplemental chart values were transferred from an earlier dashboard and are marked `needs_source_verification` in `data/processed/dashboard_supplemental_source.csv`. Check them against the original source tables before submission. The reported 2025 marriage count also differs between the workbook trend (50,256) and the factsheet headline (50,236); the dashboard keeps that distinction.
+The backend searches the processed CRVS CSV rows, calculates supported year-over-year comparisons in Python, and provides only retrieved rows and calculated evidence to Gemini. Numeric statements must cite the returned CSV row IDs. If the retrieved evidence is insufficient, the chatbot should say so.
 
-The public dashboard is usable without the AI server, but the chatbot is not publicly functional until you deploy its backend separately.
+Some supplemental dashboard figures were inherited from earlier work and are flagged for verification in `data/processed/dashboard_supplemental_source.csv`. Verify these against the original NISR source material before competition submission. The 2025 marriage workbook trend and factsheet count also differ; this distinction is preserved.

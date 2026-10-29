@@ -133,11 +133,32 @@ def answer(question):
                     '\n'.join(f"[{d['id']}] {d['text'][:350]}" for d in found[:3]),
                     'sources':citations[:3],'mode':'citation_validation_fallback','calculated_facts':facts}
         return {'answer':response,'sources':citations,'mode':'gemini_csv_rag','calculated_facts':facts}
-    except (OSError,ValueError,KeyError,IndexError,TimeoutError) as exc:
-        print('Gemini request failed:',type(exc).__name__,flush=True)
-        return {'answer':'Gemini is temporarily unavailable or the free quota has been reached. Retrieved evidence:\n\n'+
-                '\n'.join(f"[{d['id']}] {d['text'][:350]}" for d in found[:3]),
-                'sources':citations[:3],'mode':'csv_retrieval_only','calculated_facts':facts}
+    except urllib.error.HTTPError as exc:
+        print("Gemini HTTP status:", exc.code, flush=True)
+        print(
+        "Gemini error response:",
+        exc.read().decode("utf-8", errors="replace")[:1500],
+        flush=True
+        )
+
+        return {
+        "answer": "Gemini could not generate an answer. Retrieved evidence:\n\n" +
+                  "\n".join(f"[{d['id']}] {d['text'][:350]}" for d in found[:3]),
+        "sources": citations[:3],
+        "mode": "csv_retrieval_only",
+        "calculated_facts": facts
+        }
+
+    except (OSError, ValueError, KeyError, IndexError, TimeoutError) as exc:
+        print("Gemini request failed:", type(exc).__name__, flush=True)
+
+        return {
+        "answer": "Gemini is temporarily unavailable. Retrieved evidence:\n\n" +
+                  "\n".join(f"[{d['id']}] {d['text'][:350]}" for d in found[:3]),
+        "sources": citations[:3],
+        "mode": "csv_retrieval_only",
+        "calculated_facts": facts
+        }
 
 class Handler(BaseHTTPRequestHandler):
     def respond(self,status,obj):

@@ -1,2 +1,1 @@
-// Public API URL only. Never place your Gemini key here.
-window.CRVS_API_BASE = '';
+window.CRVS_API_BASE = 'https://ctrl-freaks-api.onrender.com';

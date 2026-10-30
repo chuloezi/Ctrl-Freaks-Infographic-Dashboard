@@ -6,7 +6,7 @@ A Rwanda CRVS infographic project, built with Python analytics and an interactiv
 
 ## Project structure
 
-- `static/` — static PDF infographic
+- `static/` — static PDF infographic and its HTML source, built by `analytics/build_infographic.py`
 - `dynamic/` — React interactive dashboard
 - `analytics/` — Python analysis and JSON export
 - `data/` — raw and processed data
@@ -56,6 +56,6 @@ The retriever is keyword-based rather than embedding-based, and citations are ch
 
 `analytics/analyze_crvs.py` reads every chart series and indicator from the NISR workbooks, and `analytics/verify_dashboard.py` checks the published figures against those rows.
 
-- **Marriages, 2025:** workbook Tables 18 and 20 give 50,256; the published factsheet prints 50,236. The dashboard uses 50,256. The static PDF cites the factsheet and shows 50,236.
+- **Marriages, 2025:** workbook Tables 18 and 20 give 50,256; the published factsheet prints 50,236. The dashboard and the static PDF use 50,256 and note the factsheet figure.
 - **Workbook labels:** Figures 23 and 26 appear to swap their row labels. The dashboard follows Figures 24 and 25 and Table 10.9.
 - **Divorces by province:** Table 24 counts each couple by the wife's and the husband's residence, so the dashboard shows both.

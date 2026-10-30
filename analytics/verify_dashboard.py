@@ -161,4 +161,5 @@ if errors:
     for error in errors:
         print(' -', error)
     sys.exit(1)
-print(f'PASS: {len(set(re.findall(r"metric\(.([^\"]+).\)", APP)))} displayed figures and all chart series match the workbook rows')
+shown_count = len(set(re.findall(r'metric\("([^"]+)"\)', APP)))
+print(f'PASS: {shown_count} displayed figures and all chart series match the workbook rows')

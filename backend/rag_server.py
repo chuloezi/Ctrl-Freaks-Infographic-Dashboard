@@ -7,7 +7,7 @@ from urllib.parse import urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/'data'/'processed'
-FILES=['death_trends_2019_2025.csv','marriage_trends_2019_2025.csv','birth_trends_2019_2025.csv','registration_trends_2019_2025.csv','dashboard_findings.csv','factsheet_indicators_2025.csv','nisr_workbook_rows.csv']
+FILES=['death_trends_2019_2025.csv','marriage_trends_2019_2025.csv','birth_trends_2019_2025.csv','registration_trends_2019_2025.csv','dashboard_findings.csv','factsheet_indicators_2025.csv','dashboard_supplemental_source.csv','nisr_workbook_rows.csv']
 DOCS=[]
 for fn in FILES:
     with (DATA/fn).open(encoding='utf-8',newline='') as f:
@@ -20,7 +20,7 @@ for fn in FILES:
                 except ValueError: pass
             DOCS.append({'id':f'CSV{len(DOCS)+1}','file':fn,'line':n,'text':text})
 
-STOP=set('a an the and or from by for in on with to of as is are was were do did does how what which who why explain show tell me about data csv file files rwanda years year 2025 2024'.split())
+STOP=set('a an the and or from by for in on with to of as is are was were do did does how what which who why explain show tell me about data csv file files rwanda years year'.split())
 def tokenize(s):return [w for w in re.findall(r'[a-z0-9]+',s.lower()) if len(w)>2 and w not in STOP]
 INDEX=[Counter(tokenize(d['text'])) for d in DOCS]
 DF=Counter(t for row in INDEX for t in row)
@@ -37,11 +37,15 @@ def retrieve(question,k=9):
                 and 'publication_year: 2025;' in d['text']
                 and 'sheet: Table 17;' in d['text']):
                 match=re.search(r'excel_row: (\d+)',d['text'])
-                if match and 4<=int(match.group(1))<=23:
+                # Row 3 is the header that labels the facility and community columns.
+                if match and 3<=int(match.group(1))<=23:
                     matched.append((int(match.group(1)),d))
         matched.sort(key=lambda x:x[0])
         if matched:
             return [d for _,d in matched[:k]]
+    # Province questions need both Table 24 totals, which keyword scoring misses.
+    if 'divorce' in qlow and 'province' in qlow:
+        return [d for d in DOCS if d['file']=='dashboard_supplemental_source.csv' and 'chart: divorce_province' in d['text']]
     q=Counter(tokenize(question))
     if not q:return []
     scores=[]
@@ -73,6 +77,35 @@ GEMINI_MODEL=os.getenv('GEMINI_MODEL','gemini-2.5-flash').strip()
 GEMINI_URL=f'https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent'
 CORS_ORIGIN=os.getenv('CORS_ORIGIN','http://localhost:5173')
 LOCK=threading.BoundedSemaphore(2)
+RATE_LIMIT=int(os.getenv('RATE_LIMIT_PER_MINUTE','10'))
+CACHE_SIZE=500
+GUARD=threading.Lock()
+RECENT={}
+CACHE={}
+
+def allow_request(client):
+    now=time.monotonic()
+    with GUARD:
+        for ip in [ip for ip,times in RECENT.items() if not times or now-times[-1]>60]:
+            del RECENT[ip]
+        times=[t for t in RECENT.get(client,[]) if now-t<60]
+        if len(times)>=RATE_LIMIT:
+            RECENT[client]=times
+            return False
+        RECENT[client]=times+[now]
+        return True
+
+def cached_answer(question):
+    # Only model answers are cached; a fallback should retry Gemini next time.
+    key=' '.join(question.lower().split())
+    with GUARD:
+        if key in CACHE:return CACHE[key]
+    result=answer(question)
+    if result.get('mode')=='gemini_csv_rag':
+        with GUARD:
+            if len(CACHE)>=CACHE_SIZE:CACHE.clear()
+            CACHE[key]=result
+    return result
 
 # The calculated facts are deterministic. The LLM never performs the arithmetic.
 TABLE_COLUMNS={
@@ -80,10 +113,26 @@ TABLE_COLUMNS={
  'deaths':('death_trends_2019_2025.csv','registered_deaths','deaths'),
  'marriages':('marriage_trends_2019_2025.csv','registered_marriages','marriages'),
 }
+TABLE_WORDS={
+ 'births':('birth','born'),
+ 'deaths':('death','died','mortality'),
+ 'marriages':('marriage','married'),
+}
 def numeric_evidence(question):
     q=question.lower()
-    kind=next((k for k in TABLE_COLUMNS if k in q or (k=='births' and 'born' in q)),None)
-    if not kind:return []
+    facts=[]
+    for kind,words in TABLE_WORDS.items():
+        if any(w in q for w in words):facts+=table_facts(kind,q)
+    if 'divorce' in q and (not re.search(r'\b20[12][0-9]\b',q) or '2025' in q):facts+=divorce_facts()
+    return facts
+
+def divorce_facts():
+    # The workbooks hold divorce totals for 2025 only, so there is no time series.
+    with (DATA/'factsheet_indicators_2025.csv').open(encoding='utf-8',newline='') as f:
+        row=next(r for r in csv.DictReader(f) if r['indicator']=='Registered divorces')
+    return [{'year':2025,'value':float(row['value']),'source_file':'factsheet_indicators_2025.csv','unit':'registered divorces'}]
+
+def table_facts(kind,q):
     fn,col,label=TABLE_COLUMNS[kind]
     path=DATA/fn
     with path.open(encoding='utf-8',newline='') as f:rows=list(csv.DictReader(f))
@@ -91,6 +140,7 @@ def numeric_evidence(question):
     years=sorted({int(y) for y in re.findall(r'\b20[12][0-9]\b',q) if any(r['year']==y for r in rows)})
     if not years and ('latest' in q or 'most recent' in q):years=[max(int(r['year']) for r in rows)]
     if not years:return []
+    if 'since' in q and len(years)==1:years.append(max(int(r['year']) for r in rows))
     if len(years)==1:matches=[r for r in rows if int(r['year'])==years[0]]
     else:matches=[r for r in rows if years[0]<=int(r['year'])<=years[-1]]
     facts=[]
@@ -114,12 +164,12 @@ def _human_fallback(question, found, reason):
     """Deterministic Markdown fallback: source-grounded, no fabricated claims."""
     qlow = question.lower()
     heading = f'**{reason}**'
-    if (('cause' in qlow or 'reason' in qlow) and 'death' in qlow
+    if (('cause' in qlow or 'reason' in qlow) and any(w in qlow for w in ('death','died','mortality'))
             and any('sheet: Table 17;' in d['text'] for d in found)):
         lines = [heading, '', '### Leading recorded causes of death (2025)',
                  'The source reports health-facility and community distributions separately.', '']
-        for d in found[:5]:
-            raw = d['text'].split('row_text: ', 1)[-1].split('; source cells:', 1)[0]
+        for d in found[:6]:
+            raw =d['text'].split('row_text: ', 1)[-1].split('; source cells:', 1)[0]
             values = [v.strip() for v in raw.split('|')]
             if len(values) >= 5 and values[0].isdigit():
                 lines.append(f"{values[0]}. **Facilities:** {values[1]} ({values[2]}%); "
@@ -197,6 +247,8 @@ def answer(question):
                'only if the ID is present in the evidence. Multiple tags must appear '
                'separately, like [CSV28] [CSV31]. Include at least one valid tag. '
                'Never invent a source identifier. '
+               'Write whole numbers with commas and no decimals, like 50,256. '
+               'Never mention Python or calculated facts; state the figures directly. '
                'ALLOWED SOURCE TAGS: ' + allowed_tags)
     generation={'temperature':0,'maxOutputTokens':1600}
     # Only Gemini 2.5 Flash supports this exact thinkingBudget setting.
@@ -286,7 +338,9 @@ class Handler(BaseHTTPRequestHandler):
             if size<1 or size>4096:return self.respond(413,{'error':'request too large'})
             q=json.loads(self.rfile.read(size)).get('question','')
             if not isinstance(q,str) or not 3<=len(q.strip())<=500:return self.respond(400,{'error':'Question must contain 3–500 characters'})
-            self.respond(200,answer(q.strip()))
+            client=(self.headers.get('X-Forwarded-For') or self.client_address[0]).split(',')[0].strip()
+            if not allow_request(client):return self.respond(429,{'error':'Too many questions; please wait a minute'})
+            self.respond(200,cached_answer(q.strip()))
         except (ValueError,TypeError):self.respond(400,{'error':'invalid json'})
     def log_message(self,*args):pass
 

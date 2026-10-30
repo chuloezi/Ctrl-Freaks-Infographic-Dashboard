@@ -32,3 +32,7 @@
 .rag-source-panel a{color:#fce2b7;text-decoration:underline;text-underline-offset:3px}
 .rag-source-id{font-weight:700}
 .rag-mode{font-size:11px;opacity:.82;margin-top:12px;letter-spacing:.02em}
+
+/* Keep the page within the screen on narrow devices */
+@media(max-width:1030px){.shell{grid-template-columns:minmax(0,1fr)}.rail,.main{min-width:0}.nav{overflow-x:auto}}
+.assistant .teamcredit{color:var(--teal2)}

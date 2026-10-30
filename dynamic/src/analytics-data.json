@@ -95,7 +95,7 @@
   "supplemental": {
     "maternal_age": {
       "labels": [
-        "10–14",
+        "<15",
         "15–19",
         "20–24",
         "25–29",
@@ -117,8 +117,8 @@
         0.1
       ],
       "unit": "percent",
-      "source": "Legacy project chart transcription; validate against NISR birth factsheet",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Figure 12",
+      "verification_status": "read_from_workbook"
     },
     "age_specific_fertility": {
       "labels": [
@@ -140,8 +140,8 @@
         9.6
       ],
       "unit": "births per 1000 women",
-      "source": "Legacy project chart transcription; validate against NISR 2025 final tables",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Figure15",
+      "verification_status": "read_from_workbook"
     },
     "divorce_duration": {
       "labels": [
@@ -171,27 +171,50 @@
         27.0
       ],
       "unit": "divorces",
-      "source": "Legacy project chart transcription; validate against NISR marriage/divorce factsheet",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Table27",
+      "verification_status": "read_from_workbook"
     },
-    "divorce_province": {
+    "divorce_province_wife": {
       "labels": [
         "Kigali City",
-        "Southern",
         "Eastern",
+        "Southern",
+        "Western",
         "Northern",
-        "Western"
+        "Abroad"
       ],
       "values": [
-        1820.0,
-        980.0,
-        820.0,
-        520.0,
-        339.0
+        1199.0,
+        1011.0,
+        976.0,
+        669.0,
+        592.0,
+        32.0
       ],
       "unit": "divorces",
-      "source": "Legacy project chart transcription; validate against NISR marriage/divorce factsheet",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Table24",
+      "verification_status": "read_from_workbook"
+    },
+    "divorce_province_husband": {
+      "labels": [
+        "Kigali City",
+        "Eastern",
+        "Southern",
+        "Western",
+        "Northern",
+        "Abroad"
+      ],
+      "values": [
+        1185.0,
+        990.0,
+        1006.0,
+        672.0,
+        598.0,
+        28.0
+      ],
+      "unit": "divorces",
+      "source": "2025 workbook, Table24",
+      "verification_status": "read_from_workbook"
     },
     "cause_facility": {
       "labels": [
@@ -205,8 +228,8 @@
         10.5
       ],
       "unit": "percent",
-      "source": "Legacy project chart transcription; validate against NISR causes-of-death factsheet",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Figure25",
+      "verification_status": "read_from_workbook"
     },
     "cause_community": {
       "labels": [
@@ -220,14 +243,14 @@
         14.3
       ],
       "unit": "percent",
-      "source": "Legacy project chart transcription; validate against NISR causes-of-death factsheet",
-      "verification_status": "needs_source_verification"
+      "source": "2025 workbook, Figure25",
+      "verification_status": "read_from_workbook"
     }
   },
   "factsheet_indicators": {
     "Registered live births": 356838.0,
     "Registered deaths": 39355.0,
-    "Registered marriages": 50236.0,
+    "Registered marriages": 50256.0,
     "Registered divorces": 4479.0,
     "Divorces granted and registered in 2025": 2629.0,
     "Live births in health facilities": 97.8,
@@ -250,28 +273,10 @@
     "87.0%": "87.0%",
     "92.9%": "92.9%",
     "50.5%": "50.5%",
-    "97.8%": "97.8%",
-    "8.5%": "8.5%",
-    "3.5": "3.5",
-    "55.9%": "55.9%",
-    "82.3%": "82.3%",
-    "83.9%": "83.9%",
-    "97.0%": "97.0%",
-    "356,838": "356,838",
-    "39,355": "39,355",
-    "50,236": "50,236",
-    "4,479": "4,479",
-    "2,629": "2,629",
+    "31.4%": "31.4%",
     "42.4": "42.4",
     "19.1": "19.1",
     "4.4": "4.4",
-    "166.3": "166.3",
-    "58.8%": "58.8%",
-    "49.5%": "49.5%",
-    "50,256": "50,256",
-    "23,791": "23,791",
-    "43,440": "43,440",
-    "13.9%": "13.9%",
     "5.9": "5.9",
     "5.5": "5.5",
     "29.1": "29.1",
@@ -279,20 +284,62 @@
     "1.9": "1.9",
     "3.9": "3.9",
     "3.6": "3.6",
-    "31.4%": "31.4%"
+    "23,791": "23,791",
+    "43,440": "43,440",
+    "13.9%": "13.9%",
+    "166.3": "166.3",
+    "49.5%": "49.5%",
+    "58.8%": "58.8%",
+    "24%": "24%",
+    "356,838": "356,838",
+    "39,355": "39,355",
+    "50,256": "50,256",
+    "4,479": "4,479",
+    "2,629": "2,629",
+    "97.8%": "97.8%",
+    "8.5%": "8.5%",
+    "3.5": "3.5",
+    "55.9%": "55.9%",
+    "82.3%": "82.3%",
+    "83.9%": "83.9%",
+    "97.0%": "97.0%",
+    "50,236": "50,256"
   },
   "display_provenance": {
-    "99.1%": "2025 workbook Figure6 timely registered births",
-    "89.9%": "2025 workbook Figure6 timely registered deaths",
-    "8.1%": "2025 workbook Table9 low birth weight",
-    "24,393": "Legacy dashboard transcription, district births; needs verification",
-    "8,229": "Legacy dashboard transcription, district births; needs verification",
-    "102.7": "2025 workbook Table9 sex ratio at birth",
-    "14,997": "Legacy dashboard transcription; needs source verification",
-    "18,921": "Legacy dashboard transcription; needs source verification",
-    "87.0%": "2019 completeness in processed trend CSV",
-    "92.9%": "2025 completeness in processed trend CSV",
-    "50.5%": "2025 completeness in processed trend CSV",
+    "99.1%": "2025 workbook, Figure6 timely registered births",
+    "89.9%": "2025 workbook, Figure6 timely registered deaths",
+    "8.1%": "2025 workbook, Table9 low birth weight",
+    "24,393": "2025 workbook, Table5, highest district by residence of mother",
+    "8,229": "2025 workbook, Table5, lowest district by residence of mother",
+    "102.7": "2025 workbook, Table9 sex ratio at birth",
+    "14,997": "2025 workbook, Table 15 medically certified deaths",
+    "18,921": "2025 workbook, Table 16 verbal autopsies, deaths in the reporting year",
+    "87.0%": "2025 workbook, Figure7, 2019 birth completeness",
+    "92.9%": "2025 workbook, Figure7, 2025 birth completeness",
+    "50.5%": "2025 workbook, Figure7, 2025 death completeness",
+    "31.4%": "2025 workbook, Figure7, 2019 death completeness",
+    "42.4": "2025 workbook, Figure7, 2025 birth minus death completeness",
+    "19.1": "2025 workbook, Figure7, death completeness 2025 minus 2019",
+    "4.4": "2025 workbook, Figure7, death completeness 2025 minus 2024",
+    "5.9": "2025 workbook, Figure7, birth completeness 2025 minus 2019; also the 2019 crude death rate in 10.5",
+    "5.5": "2025 workbook, 10.5, 2025 adjusted crude death rate",
+    "29.1": "2025 workbook, 10.3, 2019 adjusted crude birth rate",
+    "27.2": "2025 workbook, 10.3, 2025 adjusted crude birth rate",
+    "1.9": "2025 workbook, 10.3, adjusted crude birth rate 2019 minus 2025",
+    "3.9": "2025 workbook, Table18, 2019 crude marriage rate",
+    "3.6": "2025 workbook, Table18, 2025 crude marriage rate",
+    "23,791": "2025 workbook, 10.5, 2019 registered deaths",
+    "43,440": "2025 workbook, 10.3, registered births 2025 minus 2019",
+    "13.9%": "2025 workbook, 10.3, registered births change 2019 to 2025",
+    "166.3": "2025 workbook, Figure15, age 25-29",
+    "49.5%": "2025 workbook, Figure25, facility non-communicable share",
+    "58.8%": "2025 workbook, Figure25, community non-communicable share",
+    "24%": "2025 workbook, Table27, 5-9 year share of divorces",
+    "356,838": "data/processed/factsheet_indicators_2025.csv: Registered live births",
+    "39,355": "data/processed/factsheet_indicators_2025.csv: Registered deaths",
+    "50,256": "2025 workbook, Table18 registered marriages",
+    "4,479": "data/processed/factsheet_indicators_2025.csv: Registered divorces",
+    "2,629": "data/processed/factsheet_indicators_2025.csv: Divorces granted and registered in 2025",
     "97.8%": "data/processed/factsheet_indicators_2025.csv: Live births in health facilities",
     "8.5%": "data/processed/factsheet_indicators_2025.csv: Births to adolescent mothers aged 10–19",
     "3.5": "data/processed/factsheet_indicators_2025.csv: Total fertility rate",
@@ -300,29 +347,7 @@
     "82.3%": "data/processed/factsheet_indicators_2025.csv: Usable cause of death in facilities",
     "83.9%": "data/processed/factsheet_indicators_2025.csv: Usable cause of death in community",
     "97.0%": "data/processed/factsheet_indicators_2025.csv: Community of property marriages",
-    "356,838": "data/processed/factsheet_indicators_2025.csv: Registered live births",
-    "39,355": "data/processed/factsheet_indicators_2025.csv: Registered deaths",
-    "50,236": "data/processed/factsheet_indicators_2025.csv: Registered marriages",
-    "4,479": "data/processed/factsheet_indicators_2025.csv: Registered divorces",
-    "2,629": "data/processed/factsheet_indicators_2025.csv: Divorces granted and registered in 2025",
-    "42.4": "2025 dashboard findings CSV",
-    "19.1": "2025 dashboard findings CSV",
-    "4.4": "2025 dashboard findings CSV",
-    "166.3": "Legacy chart transcription; needs source verification",
-    "58.8%": "Legacy causes chart; needs source verification",
-    "49.5%": "Legacy causes chart; needs source verification",
-    "50,256": "2025 time series processed marriage CSV",
-    "23,791": "2019 time series processed death CSV",
-    "43,440": "2019–2025 change from processed birth CSV",
-    "13.9%": "2019–2025 relative change from processed birth CSV",
-    "5.9": "2019 death rate from processed CSV or completeness change (context dependent)",
-    "5.5": "2025 adjusted crude death rate",
-    "29.1": "2019 adjusted crude birth rate",
-    "27.2": "2025 adjusted crude birth rate",
-    "1.9": "Legacy commentary numeric, context dependent",
-    "3.9": "2019 marriage rate",
-    "3.6": "2025 marriage rate",
-    "31.4%": "2019 death completeness in 2025 source trend series"
+    "50,236": "data/processed/factsheet_indicators_2025.csv: Registered marriages"
   },
   "data_quality_warning": "Supplemental legacy-transcribed chart series are not independently source-verified; see CSV verification_status."
 }

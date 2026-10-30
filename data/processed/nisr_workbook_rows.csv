@@ -427,7 +427,7 @@ publication_year,source_file,sheet,excel_row,source_range,values_json,row_text
 2023,Final Tables_CRVS_2023.xlsx,Figure 21,4,B2:E6,"[""Rural"", ""59.3"", ""40.7"", ""100""]",Rural | 59.3 | 40.7 | 100
 2023,Final Tables_CRVS_2023.xlsx,Figure 21,5,B2:E6,"[""Urban"", ""38"", ""62"", ""100""]",Urban | 38 | 62 | 100
 2023,Final Tables_CRVS_2023.xlsx,Figure 21,6,B2:E6,"[""Source: CRVS system, 2023"", """", """", """"]","Source: CRVS system, 2023"
-2023,Final Tables_CRVS_2023.xlsx,Figure22,2,B2,"[""Figure 22: Age sex distribution (%) of deaths certified by health facilities using MCCoD""]",Figure 22: Age sex distribution (%) of deaths certified by health facilities using MCCoD
+2023,Final Tables_CRVS_2023.xlsx,Figure22,2,B2:B2,"[""Figure 22: Age sex distribution (%) of deaths certified by health facilities using MCCoD""]",Figure 22: Age sex distribution (%) of deaths certified by health facilities using MCCoD
 2023,Final Tables_CRVS_2023.xlsx,Figure23,2,B2:D5,"[""Figure 23: Distribution of institutional cause of death by usability, 2023."", """", """"]","Figure 23: Distribution of institutional cause of death by usability, 2023."
 2023,Final Tables_CRVS_2023.xlsx,Figure23,3,B2:D5,"[""#"", ""Cause of death quality"", ""Percentage""]",# | Cause of death quality | Percentage
 2023,Final Tables_CRVS_2023.xlsx,Figure23,4,B2:D5,"[""1"", ""Unusable"", ""35.2""]",1 | Unusable | 35.2

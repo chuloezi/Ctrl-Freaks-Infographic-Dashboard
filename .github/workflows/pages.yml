@@ -25,7 +25,9 @@ jobs:
         with:
           python-version: '3.11'
       - run: python analytics/export_dashboard_json.py
-      - run: npm install --no-audit --no-fund
+      - run: python analytics/verify_dashboard.py
+      - run: python backend/eval_questions.py
+      - run: npm ci --no-audit --no-fund
         working-directory: dynamic
       - run: npm run build
         working-directory: dynamic

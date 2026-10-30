@@ -11,7 +11,7 @@
   ],
   "limitations": [
     "Some source sheets include formatted/empty ranges and mixed units; raw rows must be interpreted with sheet context",
-    "Factsheet indicator catalog is transcribed, not independently derived from sheet cells",
+    "The 2025 marriage factsheet figure (50,236) is quoted from the published factsheet, which is not stored in this repository",
     "Cross-year comparability depends on NISR definitions and revisions; latest 2025 workbook is used for historical trends",
     "2025 marriage count discrepancy: 50,256 in workbook Table18 versus 50,236 in 2025 marriage factsheet; chart preserves Table18"
   ]

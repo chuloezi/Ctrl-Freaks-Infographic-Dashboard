@@ -4,8 +4,8 @@ Run: python analytics/analyze_crvs.py
 Input: three original NISR final-tables XLSX workbooks in data/raw.
 Output: transparent CSV source rows, analysis tables, chart, and validation report.
 
-Uses artifact_tool to read XLSX (pip install artifact-tool), stdlib CSV and
-matplotlib only for the optional plot. Never silently imputes missing values.
+Uses openpyxl to read XLSX, stdlib CSV and matplotlib only for the optional
+plot. Never silently imputes missing values.
 """
 from __future__ import annotations
 import csv, json, re
@@ -35,32 +35,93 @@ def clean(v):
     return str(v).strip().replace('\n',' | ')
 
 def read_workbooks():
-    from artifact_tool import Blob, SpreadsheetFile
+    from openpyxl import load_workbook
     records=[]; figures={}; sheet_index=[]
     for publication_year, name in SOURCE_FILES.items():
         path=RAW/name
         if not path.exists():raise FileNotFoundError('Missing original NISR source: '+str(path))
-        wb=SpreadsheetFile.import_xlsx(Blob.load(str(path)))
-        for sheet in wb.worksheets.items:
-            used=sheet.get_used_range()
-            match=re.search(r'\$?([A-Z]+)\$?(\d+)',used.address)
-            if not match:raise ValueError('Cannot parse source range '+used.address)
-            first_row=int(match.group(2))
-            sheet_rows=[[clean(v) for v in row] for row in used.values]
-            if publication_year==2025 and sheet.name.strip() in ('Figure6','Figure7','10.3','10.5','Table18'):
-                figures[sheet.name.strip()]=sheet_rows
+        wb=load_workbook(path,data_only=True)
+        for sheet in wb.worksheets:
+            first_row=sheet.min_row
+            address=sheet.dimensions
+            sheet_rows=[[clean(v) for v in row] for row in sheet.iter_rows(values_only=True,min_row=sheet.min_row,max_row=sheet.max_row,min_col=sheet.min_column,max_col=sheet.max_column)]
+            if publication_year==2025:
+                figures[sheet.title.strip()]=sheet_rows
             count=0
             for offset, cells in enumerate(sheet_rows):
-                if not any(cells):continue
+                if not any(cells) or cells[0].startswith('_ftnref'):continue
                 records.append({'publication_year':publication_year,'source_file':name,
-                  'sheet':sheet.name.strip(),'excel_row':first_row+offset,
-                  'source_range':used.address,'values_json':json.dumps(cells,ensure_ascii=False),
+                  'sheet':sheet.title.strip(),'excel_row':first_row+offset,
+                  'source_range':address,'values_json':json.dumps(cells,ensure_ascii=False),
                   'row_text':' | '.join(x for x in cells if x)})
                 count+=1
             sheet_index.append({'publication_year':publication_year,'source_file':name,
-                'sheet':sheet.name.strip(),'used_range':used.address,'nonempty_rows':count})
-        print(f'Loaded {publication_year}: {len(list(wb.worksheets.items))} sheets')
+                'sheet':sheet.title.strip(),'used_range':address,'nonempty_rows':count})
+        print(f'Loaded {publication_year}: {len(wb.worksheets)} sheets')
     return records,sheet_index,figures
+
+def row_with(sheet,label,start=0):
+    """First row whose cell at or after column `start` equals `label`."""
+    for r in sheet:
+        if any(c.strip()==label for c in r[start:]):return r
+    raise ValueError('Row not found: '+label)
+
+def cell_after(row,label):
+    """Non-empty cells following the label cell, as numbers where possible."""
+    i=next(i for i,c in enumerate(row) if c.strip()==label)
+    return [None if c.strip()=='-' else float(c) for c in row[i+1:] if c]
+
+def build_chart_series(figures):
+    """Every chart series is read from a named workbook sheet, never typed in."""
+    series=[]
+    def add(chart,category,value,unit,sheet):
+        series.append({'chart':chart,'category':category,'value':value,'unit':unit,
+            'provenance':f'2025 workbook, {sheet}','verification_status':'read_from_workbook'})
+    fig12=figures['Figure 12']
+    for label,shown in [('<15','<15'),('15-19','15–19'),('20-24','20–24'),('25-29','25–29'),('30-34','30–34'),('35-39','35–39'),('40-44','40–44'),('45-49','45–49'),('50+','50+')]:
+        add('maternal_age',shown,round(cell_after(row_with(fig12,label),label)[1],1),'percent','Figure 12')
+    for label in ('15-19','20-24','25-29','30-34','35-39','40-44','45-49'):
+        add('age_specific_fertility',label.replace('-','–'),round(cell_after(row_with(figures['Figure15'],label),label)[0],1),'births per 1000 women','Figure15')
+    t27=figures['Table27']
+    for label in ('0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50+'):
+        add('divorce_duration',label.replace('-','–'),int(cell_after(row_with(t27,label),label)[2]),'divorces','Table27')
+    t24=figures['Table24']
+    head=next(r for r in t24 if 'Eastern Province' in [c.strip() for c in r])
+    columns={c.strip():i for i,c in enumerate(head)}
+    places=[('Kigali City','Kigali City'),('Eastern Province','Eastern'),('Southern Province','Southern'),('Western Province','Western'),('Northern Province','Northern'),('Abroad','Abroad')]
+    # The header row repeats these labels, so match on the row's first filled cell.
+    t24_rows={next((c.strip() for c in r if c.strip()),''):r for r in t24 if r is not head}
+    totals=t24_rows['Grand Total']
+    for label,shown in places:
+        wife=t24_rows[label]
+        add('divorce_province_wife',shown,int(float(wife[columns['Grand Total']])),'divorces','Table24')
+        add('divorce_province_husband',shown,int(float(totals[columns[label]])),'divorces','Table24')
+    fig25=figures['Figure25']
+    for label,shown in [('Noncommunicable diseases','Non-communicable'),('Communicable, maternal, perinatal and nutritional conditions','Communicable etc.'),('Injuries','Injuries')]:
+        row=row_with(fig25,label)
+        values=cell_after(row,label)
+        add('cause_facility',shown,round(values[1]*100,1),'percent','Figure25')
+        add('cause_community',shown,round(values[3]*100,1),'percent','Figure25')
+    return series
+
+def district_extremes(table5):
+    """Highest and lowest district by births; excludes the total and Abroad rows."""
+    start=next(i for i,r in enumerate(table5) if r[0].strip()=='Grand Total')
+    districts=[(r[0].strip(),int(float(r[3]))) for r in table5[start+1:]
+               if r[0].strip() and r[0].strip()!='Abroad' and not r[0].startswith('Source')]
+    return max(districts,key=lambda d:d[1]),min(districts,key=lambda d:d[1])
+
+def display_row(display,value,source):
+    """`display` is the text the page shows; fail if the workbook value disagrees."""
+    suffix='%' if display.endswith('%') else ''
+    body=display.rstrip('%')
+    if ',' in body:
+        shown=f'{int(value):,}'
+    else:
+        shown=f'{value:.{len(body.split(".")[1]) if "." in body else 0}f}'
+    if shown!=body:
+        raise ValueError(f'Dashboard shows {display} but source gives {shown}: {source}')
+    return {'display':display,'value':body.replace(',',''),'suffix':suffix,'source':source}
 
 def extract_series(figure,label):
     """Get series by matched original label, NOT by assumed hard-coded values."""
@@ -150,21 +211,27 @@ def main():
     write_csv(OUT/'marriage_trends_2019_2025.csv',list(marriage_rows[0]),marriage_rows)
 
 
+    table9=figures['Table9']
+    fig24=row_with(figures['Figure24'],'Usable')
+    fig12=figures['Figure 12']
+    adolescent=sum(cell_after(row_with(fig12,x),x)[1] for x in ('<15','15-19'))
+    facility_deaths=cell_after(row_with(figures['Table 15'],'2025'),'2025')[0]
+    registered_deaths=death_rows[-1]['registered_deaths']
     catalog=[
-      ('Registered live births',356838,'events','Birth Statistics Factsheet 2025','p. 1','Births occurring in 2025 registered in CRVS'),
-      ('Registered deaths',39355,'events','Death & Cause of Death Statistics Factsheet 2025','p. 1','Deaths occurring and registered in 2025'),
-      ('Registered marriages',50236,'events','Marriage & Divorce Statistics Factsheet 2025','p. 1','Marriages registered in CRVS'),
-      ('Registered divorces',4479,'events','Marriage & Divorce Statistics Factsheet 2025','p. 1','Divorces recorded in CRVS; not a divorce rate'),
-      ('Divorces granted and registered in 2025',2629,'events','Marriage & Divorce Statistics Factsheet 2025','p. 1','Subset of legally granted and registered divorces'),
-      ('Live births in health facilities',97.8,'percent','Birth Statistics Factsheet 2025','p. 1','Of registered live births'),
-      ('Births to adolescent mothers aged 10–19',8.5,'percent','Birth Statistics Factsheet 2025','p. 1','Of registered live births'),
-      ('Total fertility rate',3.5,'births per woman','Birth Statistics Factsheet 2025','p. 1','Period total fertility rate'),
-      ('Registered community deaths',55.9,'percent','Death & Cause of Death Statistics Factsheet 2025','p. 1','Of registered deaths'),
-      ('Usable cause of death in facilities',82.3,'percent','Death & Cause of Death Statistics Factsheet 2025','p. 1','Of relevant certified facility deaths'),
-      ('Usable cause of death in community',83.9,'percent','Death & Cause of Death Statistics Factsheet 2025','p. 1','Of relevant community causes'),
-      ('Community of property marriages',97.0,'percent','Marriage & Divorce Statistics Factsheet 2025','p. 2','Of registered marriages'),
+      ('Registered live births',birth_trend[-1]['registered_live_births'],'events','2025 workbook','10.3','Births occurring in 2025 registered in CRVS'),
+      ('Registered deaths',registered_deaths,'events','2025 workbook','10.5','Deaths occurring and registered in 2025'),
+      ('Registered marriages',marriage_rows[-1]['registered_marriages'],'events','2025 workbook','Table18; the 2025 factsheet prints 50,236','Marriages registered in CRVS'),
+      ('Registered divorces',int(cell_after(row_with(figures['Figure32'],'Grand Total'),'Grand Total')[0]),'events','2025 workbook','Figure32','Divorces recorded in CRVS; not a divorce rate'),
+      ('Divorces granted and registered in 2025',int(cell_after(row_with(figures['Table28'],'Number of divorces granted and registered in 2025'),'Number of divorces granted and registered in 2025')[0]),'events','2025 workbook','Table28','Subset of legally granted and registered divorces'),
+      ('Live births in health facilities',cell_after(row_with(figures['Table4'],'All'),'All')[4],'percent','2025 workbook','Table4','Of registered live births'),
+      ('Births to adolescent mothers aged 10–19',round(adolescent,1),'percent','2025 workbook','Figure 12, <15 plus 15-19','Of registered live births'),
+      ('Total fertility rate',cell_after(row_with(table9,'TFR'),'TFR')[6],'births per woman','2025 workbook','Table9','Period total fertility rate'),
+      ('Registered community deaths',round(100*(registered_deaths-facility_deaths)/registered_deaths,1),'percent','2025 workbook','10.5 and Table 15, deaths not registered at facilities','Of registered deaths'),
+      ('Usable cause of death in facilities',float(fig24[8]),'percent','2025 workbook','Figure24; Figure 23 swaps the community labels','Of relevant certified facility deaths'),
+      ('Usable cause of death in community',float(fig24[11]),'percent','2025 workbook','Figure24 and 10.9; Figure 23 swaps the community labels','Of relevant community causes'),
+      ('Community of property marriages',round(cell_after(row_with(figures['Table20'],'Community of property regime'),'Community of property regime')[1],1),'percent','2025 workbook','Table20','Of registered marriages'),
     ]
-    indicators=[{'year':2025,'indicator':a,'value':b,'unit':c,'source_document':d,'page':e,'definition':f} for a,b,c,d,e,f in catalog]
+    indicators=[{'year':2025,'indicator':a,'value':b,'unit':c,'source_document':d,'source_location':e,'definition':f} for a,b,c,d,e,f in catalog]
     write_csv(OUT/'factsheet_indicators_2025.csv',list(indicators[0]),indicators)
     a=trends[-1]; prev=trends[-2]; base=trends[0]
     findings=[
@@ -177,12 +244,67 @@ def main():
       {'finding':'Death completeness change from 2024','value':round(a['death_completeness_pct']-prev['death_completeness_pct'],2),'unit':'percentage points','calculation':'2025 minus 2024','source':'2025 workbook, Figure7'},
     ]
     write_csv(OUT/'dashboard_findings.csv',list(findings[0]),findings)
+    series=build_chart_series(figures)
+    write_csv(OUT/'dashboard_supplemental_source.csv',list(series[0]),series)
+    def chart_value(chart,category):
+        return next(s['value'] for s in series if s['chart']==chart and s['category']==category)
+    top,bottom=district_extremes(figures['Table5'])
+    assert (top[0],bottom[0])==('Gasabo','Nyaruguru')
+    certified=int(cell_after(row_with(figures['Table 15'],'2025'),'2025')[1])
+    verbal_autopsy=int(cell_after(row_with(figures['Table 16'],'VA for deaths that occurred in the reporting year'),'VA for deaths that occurred in the reporting year')[3])
+    by_name={i['indicator']:i['value'] for i in indicators}
+    fact='2025 workbook, '
+    display=[
+      display_row('99.1%',a['birth_timely_pct'],fact+'Figure6 timely registered births'),
+      display_row('89.9%',a['death_timely_pct'],fact+'Figure6 timely registered deaths'),
+      display_row('8.1%',cell_after(row_with(table9,'Low birth weight (%)'),'Low birth weight (%)')[6],fact+'Table9 low birth weight'),
+      display_row('24,393',top[1],fact+'Table5, highest district by residence of mother'),
+      display_row('8,229',bottom[1],fact+'Table5, lowest district by residence of mother'),
+      display_row('102.7',cell_after(row_with(table9,'Sex ratio at Birth'),'Sex ratio at Birth')[6],fact+'Table9 sex ratio at birth'),
+      display_row('14,997',certified,fact+'Table 15 medically certified deaths'),
+      display_row('18,921',verbal_autopsy,fact+'Table 16 verbal autopsies, deaths in the reporting year'),
+      display_row('87.0%',base['birth_completeness_pct'],fact+'Figure7, 2019 birth completeness'),
+      display_row('92.9%',a['birth_completeness_pct'],fact+'Figure7, 2025 birth completeness'),
+      display_row('50.5%',a['death_completeness_pct'],fact+'Figure7, 2025 death completeness'),
+      display_row('31.4%',base['death_completeness_pct'],fact+'Figure7, 2019 death completeness'),
+      display_row('42.4',a['completeness_gap_pp'],fact+'Figure7, 2025 birth minus death completeness'),
+      display_row('19.1',a['death_completeness_pct']-base['death_completeness_pct'],fact+'Figure7, death completeness 2025 minus 2019'),
+      display_row('4.4',a['death_completeness_pct']-prev['death_completeness_pct'],fact+'Figure7, death completeness 2025 minus 2024'),
+      display_row('5.9',a['birth_completeness_pct']-base['birth_completeness_pct'],fact+'Figure7, birth completeness 2025 minus 2019; also the 2019 crude death rate in 10.5'),
+      display_row('5.5',death_rows[-1]['adjusted_crude_death_rate_per_1000'],fact+'10.5, 2025 adjusted crude death rate'),
+      display_row('29.1',birth_trend[0]['adjusted_crude_birth_rate_per_1000'],fact+'10.3, 2019 adjusted crude birth rate'),
+      display_row('27.2',birth_trend[-1]['adjusted_crude_birth_rate_per_1000'],fact+'10.3, 2025 adjusted crude birth rate'),
+      display_row('1.9',birth_trend[0]['adjusted_crude_birth_rate_per_1000']-birth_trend[-1]['adjusted_crude_birth_rate_per_1000'],fact+'10.3, adjusted crude birth rate 2019 minus 2025'),
+      display_row('3.9',marriage_rows[0]['crude_marriage_rate_per_1000'],fact+'Table18, 2019 crude marriage rate'),
+      display_row('3.6',marriage_rows[-1]['crude_marriage_rate_per_1000'],fact+'Table18, 2025 crude marriage rate'),
+      display_row('23,791',death_rows[0]['registered_deaths'],fact+'10.5, 2019 registered deaths'),
+      display_row('43,440',birth_trend[-1]['registered_live_births']-birth_trend[0]['registered_live_births'],fact+'10.3, registered births 2025 minus 2019'),
+      display_row('13.9%',100*(birth_trend[-1]['registered_live_births']/birth_trend[0]['registered_live_births']-1),fact+'10.3, registered births change 2019 to 2025'),
+      display_row('166.3',chart_value('age_specific_fertility','25–29'),fact+'Figure15, age 25-29'),
+      display_row('49.5%',chart_value('cause_facility','Non-communicable'),fact+'Figure25, facility non-communicable share'),
+      display_row('58.8%',chart_value('cause_community','Non-communicable'),fact+'Figure25, community non-communicable share'),
+      display_row('24%',100*chart_value('divorce_duration','5–9')/by_name['Registered divorces'],fact+'Table27, 5-9 year share of divorces'),
+      display_row('356,838',by_name['Registered live births'],fact+'10.3 registered live births'),
+      display_row('39,355',by_name['Registered deaths'],fact+'10.5 registered deaths'),
+      display_row('50,256',by_name['Registered marriages'],fact+'Table18 registered marriages'),
+      display_row('4,479',by_name['Registered divorces'],fact+'Figure32 registered divorces'),
+      display_row('2,629',by_name['Divorces granted and registered in 2025'],fact+'Table28 divorces granted and registered'),
+      display_row('97.8%',by_name['Live births in health facilities'],fact+'Table4 facility births'),
+      display_row('8.5%',by_name['Births to adolescent mothers aged 10–19'],fact+'Figure 12, mothers under 20'),
+      display_row('3.5',by_name['Total fertility rate'],fact+'Table9 total fertility rate'),
+      display_row('55.9%',by_name['Registered community deaths'],fact+'10.5 and Table 15, community share of registered deaths'),
+      display_row('82.3%',by_name['Usable cause of death in facilities'],fact+'Figure24 usable facility causes'),
+      display_row('83.9%',by_name['Usable cause of death in community'],fact+'Figure24 usable community causes'),
+      display_row('97.0%',by_name['Community of property marriages'],fact+'Table20 community of property'),
+    ]
+    assert death_rows[0]['adjusted_crude_death_rate_per_1000']==5.9
+    write_csv(OUT/'dashboard_display_source.csv',list(display[0]),display)
     assert len(trends)==7 and a['birth_completeness_pct']==92.9 and a['death_completeness_pct']==50.5
     assert a['completeness_gap_pp']==42.4
     report={'raw_rows':len(records),'source_sheets':len(index),'time_series_years':len(trends),
             'validation':'PASS','checks':['7 calendar years present','2025 births 92.9%','2025 deaths 50.5%','2025 gap 42.4 percentage points'],
             'limitations':['Some source sheets include formatted/empty ranges and mixed units; raw rows must be interpreted with sheet context',
-               'Factsheet indicator catalog is transcribed, not independently derived from sheet cells',
+               'The 2025 marriage factsheet figure (50,236) is quoted from the published factsheet, which is not stored in this repository',
                'Cross-year comparability depends on NISR definitions and revisions; latest 2025 workbook is used for historical trends', '2025 marriage count discrepancy: 50,256 in workbook Table18 versus 50,236 in 2025 marriage factsheet; chart preserves Table18']}
     (OUT/'validation_report.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     try:

@@ -29,7 +29,7 @@ publication_year,source_file,sheet,used_range,nonempty_rows
 2023,Final Tables_CRVS_2023.xlsx,Figure 19,B2:E24,23
 2023,Final Tables_CRVS_2023.xlsx,Figure 20,B2:E24,23
 2023,Final Tables_CRVS_2023.xlsx,Figure 21,B2:E6,5
-2023,Final Tables_CRVS_2023.xlsx,Figure22,B2,1
+2023,Final Tables_CRVS_2023.xlsx,Figure22,B2:B2,1
 2023,Final Tables_CRVS_2023.xlsx,Figure23,B2:D5,4
 2023,Final Tables_CRVS_2023.xlsx,Figure24,A2:D7,6
 2023,Final Tables_CRVS_2023.xlsx,Figure25,B2:J21,20
@@ -51,7 +51,7 @@ publication_year,source_file,sheet,used_range,nonempty_rows
 2023,Final Tables_CRVS_2023.xlsx,Annex5,B1:E22,22
 2023,Final Tables_CRVS_2023.xlsx,Annex6,B1:H17,17
 2023,Final Tables_CRVS_2023.xlsx,Annex7,B1:E20,20
-2023,Final Tables_CRVS_2023.xlsx,Sheet13,A1,0
+2023,Final Tables_CRVS_2023.xlsx,Sheet13,A1:A1,0
 2024,Final Tables_CRVS_2024_N.xlsx,Figure2,B3:E23,21
 2024,Final Tables_CRVS_2024_N.xlsx,Figure7,B3:L7,5
 2024,Final Tables_CRVS_2024_N.xlsx,Figure8,B3:L7,5
